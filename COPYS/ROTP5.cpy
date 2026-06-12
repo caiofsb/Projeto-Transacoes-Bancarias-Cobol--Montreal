@@ -8,13 +8,23 @@
            MOVE SPACES TO WKR-CHAVE-TRX.
 
            MOVE ZEROS TO WKR-SALDO-ATUAL.
+
            MOVE ZEROS TO WKR-TOT-CRED-CLI.
            MOVE ZEROS TO WKR-TOT-DEB-CLI.
 
+           MOVE ZEROS TO WKR-TOT-CRED-GERAL.
+           MOVE ZEROS TO WKR-TOT-DEB-GERAL.
+
+           MOVE ZEROS TO WKR-SALDO-CRED-GERAL.
+           MOVE ZEROS TO WKR-SALDO-DEB-GERAL.
+
            MOVE ZEROS TO WKR-CLIENTES-PROC.
            MOVE ZEROS TO WKR-TRANS-PROC.
+
            MOVE ZEROS TO WKR-CREDITOS-PROC.
            MOVE ZEROS TO WKR-DEBITOS-PROC.
+
+           MOVE ZEROS TO WKR-TRANS-REJEITADAS.
            MOVE ZEROS TO WKR-ERROS.
 
            MOVE ZEROS TO WKR-CLIENTES-LIDOS.
@@ -114,15 +124,20 @@
 
               ADD 1 TO WKR-CLIENTES-LIDOS
 
-              MOVE CLI-ID TO WKR-CHAVE-CLI
+              MOVE CLI-ID
+                TO WKR-CHAVE-CLI
 
-              MOVE CLI-SALDO TO WKR-SALDO-ATUAL
+              MOVE CLI-SALDO
+                TO WKR-SALDO-ATUAL
 
-              MOVE ZEROS TO WKR-TOT-CRED-CLI
+              MOVE ZEROS
+                TO WKR-TOT-CRED-CLI
 
-              MOVE ZEROS TO WKR-TOT-DEB-CLI
+              MOVE ZEROS
+                TO WKR-TOT-DEB-CLI
 
-              ADD 1 TO WKR-CLIENTES-PROC
+              ADD 1
+                TO WKR-CLIENTES-PROC
 
            END-IF.
 
@@ -140,11 +155,14 @@
 
            IF WKR-FIM-TRX NOT = 'S'
 
-              ADD 1 TO WKR-TRANS-LIDAS
+              ADD 1
+                TO WKR-TRANS-LIDAS
 
-              MOVE TRX-CLI-ID TO WKR-CHAVE-TRX
+              MOVE TRX-CLI-ID
+                TO WKR-CHAVE-TRX
 
-              ADD 1 TO WKR-TRANS-PROC
+              ADD 1
+                TO WKR-TRANS-PROC
 
            END-IF.
 
@@ -178,7 +196,8 @@
 
        0510-VALIDAR-TRANSACAO.
 
-           MOVE SPACES TO WKR-ULTIMO-ERRO.
+           MOVE SPACES
+             TO WKR-ULTIMO-ERRO.
 
 
            IF TRX-TIPO NOT = 'C'
@@ -199,13 +218,19 @@
        0540-CREDITO.
 
            ADD TRX-VALOR
-               TO WKR-SALDO-ATUAL.
+             TO WKR-SALDO-ATUAL.
 
            ADD TRX-VALOR
-               TO WKR-TOT-CRED-CLI.
+             TO WKR-TOT-CRED-CLI.
+
+           ADD TRX-VALOR
+             TO WKR-TOT-CRED-GERAL.
+
+           ADD TRX-VALOR
+             TO WKR-SALDO-CRED-GERAL.
 
            ADD 1
-               TO WKR-CREDITOS-PROC.
+             TO WKR-CREDITOS-PROC.
 
 
        0545-DEBITO.
@@ -217,13 +242,19 @@
            ELSE
 
               SUBTRACT TRX-VALOR
-                  FROM WKR-SALDO-ATUAL
+                FROM WKR-SALDO-ATUAL
 
               ADD TRX-VALOR
-                  TO WKR-TOT-DEB-CLI
+                TO WKR-TOT-DEB-CLI
+
+              ADD TRX-VALOR
+                TO WKR-TOT-DEB-GERAL
+
+              ADD TRX-VALOR
+                TO WKR-SALDO-DEB-GERAL
 
               ADD 1
-                  TO WKR-DEBITOS-PROC
+                TO WKR-DEBITOS-PROC
 
            END-IF.
 
@@ -286,6 +317,10 @@
            ADD 1
              TO WKR-ERROS-CLIENTE.
 
+           ADD 1
+             TO WKR-TRANS-REJEITADAS.
+
+
            MOVE 'CLIENTE INEXISTENTE'
              TO WKR-ULTIMO-ERRO.
 
@@ -309,6 +344,9 @@
            ADD 1
              TO WKR-ERROS-TIPO.
 
+           ADD 1
+             TO WKR-TRANS-REJEITADAS.
+
 
            MOVE 'TIPO INVALIDO'
              TO WKR-ULTIMO-ERRO.
@@ -330,6 +368,9 @@
            ADD 1
              TO WKR-ERROS-VALOR.
 
+           ADD 1
+             TO WKR-TRANS-REJEITADAS.
+
 
            MOVE 'VALOR INVALIDO'
              TO WKR-ULTIMO-ERRO.
@@ -350,6 +391,9 @@
 
            ADD 1
              TO WKR-ERROS-SALDO.
+
+           ADD 1
+             TO WKR-TRANS-REJEITADAS.
 
 
            MOVE 'SALDO INSUFICIENTE'
@@ -405,6 +449,24 @@
 
            DISPLAY 'ERROS DE CLIENTE.........: '
                    WKR-ERROS-CLIENTE.
+
+
+           DISPLAY 'TRANSACOES REJEITADAS....: '
+                   WKR-TRANS-REJEITADAS.
+
+
+           DISPLAY 'TOTAL CREDITOS...........: '
+                   WKR-TOT-CRED-GERAL.
+
+           DISPLAY 'TOTAL DEBITOS............: '
+                   WKR-TOT-DEB-GERAL.
+
+
+           DISPLAY 'VALOR CREDITOS...........: '
+                   WKR-SALDO-CRED-GERAL.
+
+           DISPLAY 'VALOR DEBITOS............: '
+                   WKR-SALDO-DEB-GERAL.
 
 
            DISPLAY 'FIM DO PROCESSAMENTO'.

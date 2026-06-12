@@ -43,8 +43,24 @@
            05  WKR-ULTIMO-ERRO
                PIC X(20) VALUE SPACES.
 
+           *> CONTROLE FINANCEIRO GERAL
+           05  WKR-TOT-CRED-GERAL
+               PIC 9(12) VALUE ZEROS.
 
-           *> RELATORIO
+           05  WKR-TOT-DEB-GERAL
+               PIC 9(12) VALUE ZEROS.
+
+           05  WKR-SALDO-CRED-GERAL
+               PIC 9(12) VALUE ZEROS.
+
+           05  WKR-SALDO-DEB-GERAL
+               PIC 9(12) VALUE ZEROS.
+
+           05  WKR-TRANS-REJEITADAS
+               PIC 9(06) VALUE ZEROS.
+
+
+           *> CABECALHO DO RELATORIO
            05  REL-CAB-1          PIC X(132)
                VALUE
                'RELATORIO DE TRANSACOES BANCARIAS'.
@@ -57,6 +73,7 @@
                VALUE SPACES.
 
 
+           *> CLIENTE
            05  REL-CLI.
                10  FILLER         PIC X(09)
                    VALUE 'CLIENTE: '.
@@ -66,6 +83,7 @@
                    VALUE SPACES.
 
 
+           *> CREDITOS
            05  REL-CRED.
                10  FILLER         PIC X(16)
                    VALUE 'TOTAL CREDITOS: '.
@@ -75,6 +93,7 @@
                    VALUE SPACES.
 
 
+           *> DEBITOS
            05  REL-DEB.
                10  FILLER         PIC X(15)
                    VALUE 'TOTAL DEBITOS: '.
