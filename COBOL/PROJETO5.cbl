@@ -1,0 +1,82 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. PROJETO5.
+       AUTHOR. CAIO FELIPE.
+
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT ARQ-CLI ASSIGN TO UT-S-CLIIN.
+           SELECT ARQ-TRX ASSIGN TO UT-S-TRXIN.
+           SELECT ARQ-ATU ASSIGN TO UT-S-ATUOUT.
+           SELECT ARQ-REL ASSIGN TO UT-S-RELAT.
+           SELECT ARQ-ERR ASSIGN TO UT-S-ERROUT.
+
+       DATA DIVISION.
+       FILE SECTION.
+
+       FD ARQ-CLI
+           RECORDING MODE IS F
+           BLOCK CONTAINS 0 RECORDS
+           RECORD CONTAINS 44 CHARACTERS
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS REG-CLIENTE.
+       01 REG-CLIENTE.
+           05  CLI-ID             PIC 9(05).
+           05  CLI-NOME           PIC X(30).
+           05  CLI-SALDO          PIC 9(09).
+
+       FD ARQ-TRX
+           RECORDING MODE IS F
+           BLOCK CONTAINS 0 RECORDS
+           RECORD CONTAINS 20 CHARACTERS
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS REG-TRANSACAO.
+       01 REG-TRANSACAO.
+           05  TRX-CLI-ID         PIC 9(05).
+           05  TRX-ID             PIC 9(05).
+           05  TRX-TIPO           PIC X(01).
+           05  TRX-VALOR          PIC 9(09).
+       FD ARQ-ATU
+           RECORDING MODE IS F
+           BLOCK CONTAINS 0 RECORDS
+           RECORD CONTAINS 44 CHARACTERS
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS REG-CLI-ATU.
+       01  REG-CLI-ATU.
+           05  ATU-ID             PIC 9(05).
+           05  ATU-NOME           PIC X(30).
+           05  ATU-SALDO          PIC 9(09).
+
+       FD ARQ-REL
+           RECORDING MODE IS F
+           BLOCK CONTAINS 0 RECORDS
+           RECORD CONTAINS 132 CHARACTERS
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS REG-REL.
+       01 REG-REL                PIC X(132).
+
+       FD ARQ-ERR
+           RECORDING MODE IS F
+           BLOCK CONTAINS 0 RECORDS
+           RECORD CONTAINS 80 CHARACTERS
+           LABEL RECORDS ARE STANDARD
+           DATA RECORD IS REG-ERR.
+       01 REG-ERR                PIC X(80).
+
+       WORKING-STORAGE SECTION.
+       01 WS-VARIAVEIS COPY WRKP5.
+
+       PROCEDURE DIVISION.
+
+       0000-PRINCIPAL.
+           PERFORM 0100-INICIAR.
+           PERFORM 0200-PROCESSAR
+              UNTIL WKR-FIM-PROC IS EQUAL TO 'S'.
+           PERFORM 0900-FINALIZAR.
+           STOP RUN.
+
+
+       9999-COPY-ROTINAS.
+       COPY ROTP5.
+
