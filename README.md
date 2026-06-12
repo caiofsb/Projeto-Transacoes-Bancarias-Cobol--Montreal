@@ -126,7 +126,7 @@ Tamanho total: **20 posições**
 
 ## Em Funcionamento no TK5
 
-> Espaço reservado para o GIF da execução no TK5/TN3270.
+
 
 <img width="1200" height="675" alt="2026-06-12 12-52-39" src="https://github.com/user-attachments/assets/14cdee32-d76f-476a-9524-ba9da04b3624" />
 
@@ -134,7 +134,7 @@ Tamanho total: **20 posições**
 
 ## Clientes Atualizados
 
-> Espaço reservado para a print do arquivo `HERC01.CLIENTES.ATU`.
+
 
 <img width="1371" height="403" alt="image" src="https://github.com/user-attachments/assets/81970df2-62d9-4bb3-8fa8-0ab6ae542957" />
 
@@ -142,7 +142,7 @@ Tamanho total: **20 posições**
 
 ## Relatório Gerado
 
-> Espaço reservado para a print do arquivo `HERC01.RELAT.P5`.
+
 
 <img width="1435" height="661" alt="image" src="https://github.com/user-attachments/assets/e2dc3fe0-600e-4700-bc59-af1db98b526c" />
 
@@ -150,7 +150,7 @@ Tamanho total: **20 posições**
 
 ## Arquivo de Erros
 
-> Espaço reservado para a print do arquivo `HERC01.ERROS.TXT`.
+
 
 <img width="1530" height="409" alt="image" src="https://github.com/user-attachments/assets/5ce51b63-f83f-4911-a328-e51825f22540" />
 
@@ -158,7 +158,7 @@ Tamanho total: **20 posições**
 
 ## Output do RUNP5
 
-> Espaço reservado para a print do SYSOUT da execução do `RUNP5`.
+
 
 <img width="1858" height="445" alt="image" src="https://github.com/user-attachments/assets/87351af5-3e93-4a8b-a79f-7d4fd0e60603" />
 
