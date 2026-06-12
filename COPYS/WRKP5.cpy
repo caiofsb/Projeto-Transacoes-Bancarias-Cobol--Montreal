@@ -1,21 +1,16 @@
+       01  WKR-VARIAVEIS.
+
            05  WKR-FIM-PROC       PIC X(01) VALUE 'N'.
-
            05  WKR-FIM-CLI        PIC X(01) VALUE 'N'.
-               88  WKR-CLI-ACABOU VALUE 'S'.
-
            05  WKR-FIM-TRX        PIC X(01) VALUE 'N'.
-               88  WKR-TRX-ACABOU VALUE 'S'.
-
 
            05  WKR-CHAVE-CLI      PIC X(05) VALUE SPACES.
            05  WKR-CHAVE-TRX      PIC X(05) VALUE SPACES.
-
 
            05  WKR-SALDO-ATUAL    PIC 9(09) VALUE ZEROS.
 
            05  WKR-TOT-CRED-CLI   PIC 9(09) VALUE ZEROS.
            05  WKR-TOT-DEB-CLI    PIC 9(09) VALUE ZEROS.
-
 
            05  WKR-CLIENTES-PROC  PIC 9(06) VALUE ZEROS.
            05  WKR-TRANS-PROC     PIC 9(06) VALUE ZEROS.
@@ -23,10 +18,8 @@
            05  WKR-DEBITOS-PROC   PIC 9(06) VALUE ZEROS.
            05  WKR-ERROS          PIC 9(06) VALUE ZEROS.
 
-
            05  WKR-CLIENTES-LIDOS PIC 9(06) VALUE ZEROS.
            05  WKR-TRANS-LIDAS    PIC 9(06) VALUE ZEROS.
-
 
            05  WKR-STATUS-CLI     PIC X(02) VALUE SPACES.
            05  WKR-STATUS-TRX     PIC X(02) VALUE SPACES.
@@ -34,14 +27,34 @@
            05  WKR-STATUS-REL     PIC X(02) VALUE SPACES.
            05  WKR-STATUS-ERR     PIC X(02) VALUE SPACES.
 
+           *> CONTROLE DE ERROS
+           05  WKR-ERROS-TIPO
+               PIC 9(06) VALUE ZEROS.
 
+           05  WKR-ERROS-VALOR
+               PIC 9(06) VALUE ZEROS.
+
+           05  WKR-ERROS-SALDO
+               PIC 9(06) VALUE ZEROS.
+
+           05  WKR-ERROS-CLIENTE
+               PIC 9(06) VALUE ZEROS.
+
+           05  WKR-ULTIMO-ERRO
+               PIC X(20) VALUE SPACES.
+
+
+           *> RELATORIO
            05  REL-CAB-1          PIC X(132)
-               VALUE 'RELATORIO DE TRANSACOES BANCARIAS'.
+               VALUE
+               'RELATORIO DE TRANSACOES BANCARIAS'.
 
            05  REL-TRACO          PIC X(132)
-               VALUE '----------------------------------------'.
+               VALUE
+               '--------------------------------------------------'.
 
-           05  REL-LINHA-BRANCO   PIC X(132) VALUE SPACES.
+           05  REL-LINHA-BRANCO   PIC X(132)
+               VALUE SPACES.
 
 
            05  REL-CLI.
@@ -71,6 +84,7 @@
                    VALUE SPACES.
 
 
+           *> ERRO CLIENTE
            05  ERR-CLI-NAO.
                10  FILLER         PIC X(34)
                    VALUE
@@ -81,6 +95,7 @@
                    VALUE SPACES.
 
 
+           *> ERRO TIPO
            05  ERR-TIPO.
                10  FILLER         PIC X(38)
                    VALUE
@@ -91,6 +106,7 @@
                    VALUE SPACES.
 
 
+           *> ERRO VALOR
            05  ERR-VALOR.
                10  FILLER         PIC X(39)
                    VALUE
@@ -101,6 +117,7 @@
                    VALUE SPACES.
 
 
+           *> ERRO SALDO
            05  ERR-SALDO.
                10  FILLER         PIC X(30)
                    VALUE

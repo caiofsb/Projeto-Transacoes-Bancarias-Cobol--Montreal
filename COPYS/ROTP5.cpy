@@ -20,11 +20,12 @@
            MOVE ZEROS TO WKR-CLIENTES-LIDOS.
            MOVE ZEROS TO WKR-TRANS-LIDAS.
 
-           MOVE SPACES TO WKR-STATUS-CLI.
-           MOVE SPACES TO WKR-STATUS-TRX.
-           MOVE SPACES TO WKR-STATUS-ATU.
-           MOVE SPACES TO WKR-STATUS-REL.
-           MOVE SPACES TO WKR-STATUS-ERR.
+           MOVE ZEROS TO WKR-ERROS-TIPO.
+           MOVE ZEROS TO WKR-ERROS-VALOR.
+           MOVE ZEROS TO WKR-ERROS-SALDO.
+           MOVE ZEROS TO WKR-ERROS-CLIENTE.
+
+           MOVE SPACES TO WKR-ULTIMO-ERRO.
 
 
            OPEN INPUT ARQ-CLI.
@@ -50,47 +51,52 @@
 
        0200-PROCESSAR.
 
-           IF WKR-CLI-ACABOU
+           IF WKR-FIM-CLI = 'S'
 
-              PERFORM 0210-CLIENTE-ACABOU
+              IF WKR-FIM-TRX = 'S'
+
+                 MOVE 'S' TO WKR-FIM-PROC
+
+              ELSE
+
+                 PERFORM 0700-TRANSACAO-SEM-CLI
+
+              END-IF
 
            ELSE
 
-              IF WKR-TRX-ACABOU
+              IF WKR-FIM-TRX = 'S'
 
                  PERFORM 0600-FINALIZA-CLIENTE
 
               ELSE
 
-                 PERFORM 0230-COMPARAR.
+                 PERFORM 0230-COMPARAR
 
+              END-IF
 
-       0210-CLIENTE-ACABOU.
-
-           IF WKR-TRX-ACABOU
-
-              MOVE 'S' TO WKR-FIM-PROC
-
-           ELSE
-
-              PERFORM 0700-TRANSACAO-SEM-CLI.
+           END-IF.
 
 
        0230-COMPARAR.
 
-           IF WKR-CHAVE-CLI IS EQUAL TO WKR-CHAVE-TRX
+           IF WKR-CHAVE-CLI = WKR-CHAVE-TRX
 
               PERFORM 0500-APLICA-TRANSACAO
 
            ELSE
 
-              IF WKR-CHAVE-CLI IS LESS THAN WKR-CHAVE-TRX
+              IF WKR-CHAVE-CLI < WKR-CHAVE-TRX
 
                  PERFORM 0600-FINALIZA-CLIENTE
 
               ELSE
 
-                 PERFORM 0700-TRANSACAO-SEM-CLI.
+                 PERFORM 0700-TRANSACAO-SEM-CLI
+
+              END-IF
+
+           END-IF.
 
 
        0300-LER-CLI.
@@ -104,7 +110,7 @@
            END-READ.
 
 
-           IF WKR-FIM-CLI IS NOT EQUAL TO 'S'
+           IF WKR-FIM-CLI NOT = 'S'
 
               ADD 1 TO WKR-CLIENTES-LIDOS
 
@@ -116,7 +122,9 @@
 
               MOVE ZEROS TO WKR-TOT-DEB-CLI
 
-              ADD 1 TO WKR-CLIENTES-PROC.
+              ADD 1 TO WKR-CLIENTES-PROC
+
+           END-IF.
 
 
        0400-LER-TRX.
@@ -130,105 +138,134 @@
            END-READ.
 
 
-           IF WKR-FIM-TRX IS NOT EQUAL TO 'S'
+           IF WKR-FIM-TRX NOT = 'S'
 
               ADD 1 TO WKR-TRANS-LIDAS
 
               MOVE TRX-CLI-ID TO WKR-CHAVE-TRX
 
-              ADD 1 TO WKR-TRANS-PROC.
+              ADD 1 TO WKR-TRANS-PROC
+
+           END-IF.
 
 
        0500-APLICA-TRANSACAO.
 
-           IF TRX-TIPO IS EQUAL TO 'C'
+           PERFORM 0510-VALIDAR-TRANSACAO.
 
-              PERFORM 0540-CREDITO
 
-           ELSE
+           IF WKR-ULTIMO-ERRO = SPACES
 
-              IF TRX-TIPO IS EQUAL TO 'D'
+              IF TRX-TIPO = 'C'
 
-                 PERFORM 0545-DEBITO
+                 PERFORM 0540-CREDITO
 
               ELSE
 
-                 PERFORM 0830-ERRO-TIPO.
+                 IF TRX-TIPO = 'D'
+
+                    PERFORM 0545-DEBITO
+
+                 END-IF
+
+              END-IF
+
+           END-IF.
 
 
            PERFORM 0400-LER-TRX.
 
 
-       0540-CREDITO.
+       0510-VALIDAR-TRANSACAO.
 
-           IF TRX-VALOR IS EQUAL TO ZEROS
+           MOVE SPACES TO WKR-ULTIMO-ERRO.
+
+
+           IF TRX-TIPO NOT = 'C'
+              AND TRX-TIPO NOT = 'D'
+
+              PERFORM 0830-ERRO-TIPO
+
+           END-IF.
+
+
+           IF TRX-VALOR = ZEROS
 
               PERFORM 0840-ERRO-VALOR
 
-           ELSE
+           END-IF.
 
-              ADD TRX-VALOR TO WKR-SALDO-ATUAL
 
-              ADD TRX-VALOR TO WKR-TOT-CRED-CLI
+       0540-CREDITO.
 
-              ADD 1 TO WKR-CREDITOS-PROC.
+           ADD TRX-VALOR
+               TO WKR-SALDO-ATUAL.
+
+           ADD TRX-VALOR
+               TO WKR-TOT-CRED-CLI.
+
+           ADD 1
+               TO WKR-CREDITOS-PROC.
 
 
        0545-DEBITO.
 
-           IF TRX-VALOR IS EQUAL TO ZEROS
+           IF TRX-VALOR > WKR-SALDO-ATUAL
 
-              PERFORM 0840-ERRO-VALOR
+              PERFORM 0850-ERRO-SALDO
 
            ELSE
 
-              IF TRX-VALOR IS GREATER THAN WKR-SALDO-ATUAL
+              SUBTRACT TRX-VALOR
+                  FROM WKR-SALDO-ATUAL
 
-                 PERFORM 0850-ERRO-SALDO
+              ADD TRX-VALOR
+                  TO WKR-TOT-DEB-CLI
 
-              ELSE
+              ADD 1
+                  TO WKR-DEBITOS-PROC
 
-                 SUBTRACT TRX-VALOR FROM WKR-SALDO-ATUAL
-
-                 ADD TRX-VALOR TO WKR-TOT-DEB-CLI
-
-                 ADD 1 TO WKR-DEBITOS-PROC.
+           END-IF.
 
 
        0600-FINALIZA-CLIENTE.
 
-           MOVE CLI-ID TO ATU-ID.
+           MOVE CLI-ID
+             TO ATU-ID.
 
-           MOVE CLI-NOME TO ATU-NOME.
+           MOVE CLI-NOME
+             TO ATU-NOME.
 
-           MOVE WKR-SALDO-ATUAL TO ATU-SALDO.
+           MOVE WKR-SALDO-ATUAL
+             TO ATU-SALDO.
+
 
            WRITE REG-CLI-ATU.
 
 
-           MOVE CLI-ID TO REL-CLI-ID.
+           MOVE CLI-ID
+             TO REL-CLI-ID.
 
-           WRITE REG-REL FROM REL-CLI.
-
-
-           DISPLAY 'CLIENTE: ' CLI-ID.
-
-
-           MOVE WKR-TOT-CRED-CLI TO REL-TOT-CRED.
-
-           WRITE REG-REL FROM REL-CRED.
-
-           DISPLAY 'TOTAL CREDITOS: ' WKR-TOT-CRED-CLI.
+           WRITE REG-REL
+             FROM REL-CLI.
 
 
-           MOVE WKR-TOT-DEB-CLI TO REL-TOT-DEB.
+           MOVE WKR-TOT-CRED-CLI
+             TO REL-TOT-CRED.
 
-           WRITE REG-REL FROM REL-DEB.
+           WRITE REG-REL
+             FROM REL-CRED.
 
-           DISPLAY 'TOTAL DEBITOS: ' WKR-TOT-DEB-CLI.
+
+           MOVE WKR-TOT-DEB-CLI
+             TO REL-TOT-DEB.
+
+           WRITE REG-REL
+             FROM REL-DEB.
 
 
-           WRITE REG-REL FROM REL-LINHA-BRANCO.
+           WRITE REG-REL
+             FROM REL-LINHA-BRANCO.
 
 
            PERFORM 0300-LER-CLI.
@@ -236,50 +273,101 @@
 
        0700-TRANSACAO-SEM-CLI.
 
-           MOVE TRX-CLI-ID TO ERR-ID-CLI.
+           MOVE TRX-CLI-ID
+             TO ERR-ID-CLI.
 
-           WRITE REG-ERR FROM ERR-CLI-NAO.
+           WRITE REG-ERR
+             FROM ERR-CLI-NAO.
 
-           ADD 1 TO WKR-ERROS.
+
+           ADD 1
+             TO WKR-ERROS.
+
+           ADD 1
+             TO WKR-ERROS-CLIENTE.
+
+           MOVE 'CLIENTE INEXISTENTE'
+             TO WKR-ULTIMO-ERRO.
+
 
            PERFORM 0400-LER-TRX.
 
 
        0830-ERRO-TIPO.
 
-           MOVE TRX-CLI-ID TO ERR-ID-TIPO.
+           MOVE TRX-CLI-ID
+             TO ERR-ID-TIPO.
 
-           WRITE REG-ERR FROM ERR-TIPO.
 
-           ADD 1 TO WKR-ERROS.
+           WRITE REG-ERR
+             FROM ERR-TIPO.
+
+
+           ADD 1
+             TO WKR-ERROS.
+
+           ADD 1
+             TO WKR-ERROS-TIPO.
+
+
+           MOVE 'TIPO INVALIDO'
+             TO WKR-ULTIMO-ERRO.
 
 
        0840-ERRO-VALOR.
 
-           MOVE TRX-CLI-ID TO ERR-ID-VALOR.
+           MOVE TRX-CLI-ID
+             TO ERR-ID-VALOR.
 
-           WRITE REG-ERR FROM ERR-VALOR.
 
-           ADD 1 TO WKR-ERROS.
+           WRITE REG-ERR
+             FROM ERR-VALOR.
+
+
+           ADD 1
+             TO WKR-ERROS.
+
+           ADD 1
+             TO WKR-ERROS-VALOR.
+
+
+           MOVE 'VALOR INVALIDO'
+             TO WKR-ULTIMO-ERRO.
 
 
        0850-ERRO-SALDO.
 
-           MOVE TRX-CLI-ID TO ERR-ID-SALDO.
+           MOVE TRX-CLI-ID
+             TO ERR-ID-SALDO.
 
-           WRITE REG-ERR FROM ERR-SALDO.
 
-           ADD 1 TO WKR-ERROS.
+           WRITE REG-ERR
+             FROM ERR-SALDO.
+
+
+           ADD 1
+             TO WKR-ERROS.
+
+           ADD 1
+             TO WKR-ERROS-SALDO.
+
+
+           MOVE 'SALDO INSUFICIENTE'
+             TO WKR-ULTIMO-ERRO.
 
 
        0900-FINALIZAR.
 
-           WRITE REG-REL FROM REL-TRACO.
+           WRITE REG-REL
+             FROM REL-TRACO.
 
 
            DISPLAY '****************************************'.
+
            DISPLAY 'ESTATISTICAS DE PROCESSAMENTO'.
+
            DISPLAY '****************************************'.
+
 
            DISPLAY 'CLIENTES PROCESSADOS.....: '
                    WKR-CLIENTES-PROC.
@@ -287,11 +375,13 @@
            DISPLAY 'CLIENTES LIDOS...........: '
                    WKR-CLIENTES-LIDOS.
 
+
            DISPLAY 'TRANSACOES PROCESSADAS...: '
                    WKR-TRANS-PROC.
 
            DISPLAY 'TRANSACOES LIDAS.........: '
                    WKR-TRANS-LIDAS.
+
 
            DISPLAY 'CREDITOS PROCESSADOS.....: '
                    WKR-CREDITOS-PROC.
@@ -299,8 +389,23 @@
            DISPLAY 'DEBITOS PROCESSADOS......: '
                    WKR-DEBITOS-PROC.
 
+
            DISPLAY 'ERROS ENCONTRADOS........: '
                    WKR-ERROS.
+
+
+           DISPLAY 'ERROS DE TIPO............: '
+                   WKR-ERROS-TIPO.
+
+           DISPLAY 'ERROS DE VALOR...........: '
+                   WKR-ERROS-VALOR.
+
+           DISPLAY 'ERROS DE SALDO...........: '
+                   WKR-ERROS-SALDO.
+
+           DISPLAY 'ERROS DE CLIENTE.........: '
+                   WKR-ERROS-CLIENTE.
+
 
            DISPLAY 'FIM DO PROCESSAMENTO'.
 
