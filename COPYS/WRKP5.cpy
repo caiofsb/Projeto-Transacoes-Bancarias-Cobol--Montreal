@@ -43,7 +43,7 @@
            05  WKR-ULTIMO-ERRO
                PIC X(20) VALUE SPACES.
 
-           *> CONTROLE FINANCEIRO GERAL
+           *> TOTAIS GERAIS
            05  WKR-TOT-CRED-GERAL
                PIC 9(12) VALUE ZEROS.
 
@@ -59,8 +59,26 @@
            05  WKR-TRANS-REJEITADAS
                PIC 9(06) VALUE ZEROS.
 
+           *> NOVOS INDICADORES
+           05  WKR-SALDO-LIQUIDO
+               PIC S9(12) VALUE ZEROS.
 
-           *> CABECALHO DO RELATORIO
+           05  WKR-TAXA-ERRO
+               PIC 9(03)V9(02) VALUE ZEROS.
+
+           05  WKR-SITUACAO
+               PIC X(20) VALUE SPACES.
+
+
+           *> CAMPOS AUXILIARES
+           05  WKR-CALC-TAXA
+               PIC 9(09) VALUE ZEROS.
+
+           05  WKR-CALC-PERCENTUAL
+               PIC 9(05)V9(02) VALUE ZEROS.
+
+
+           *> RELATORIO
            05  REL-CAB-1          PIC X(132)
                VALUE
                'RELATORIO DE TRANSACOES BANCARIAS'.
@@ -73,7 +91,6 @@
                VALUE SPACES.
 
 
-           *> CLIENTE
            05  REL-CLI.
                10  FILLER         PIC X(09)
                    VALUE 'CLIENTE: '.
@@ -83,7 +100,6 @@
                    VALUE SPACES.
 
 
-           *> CREDITOS
            05  REL-CRED.
                10  FILLER         PIC X(16)
                    VALUE 'TOTAL CREDITOS: '.
@@ -93,7 +109,6 @@
                    VALUE SPACES.
 
 
-           *> DEBITOS
            05  REL-DEB.
                10  FILLER         PIC X(15)
                    VALUE 'TOTAL DEBITOS: '.
@@ -103,7 +118,6 @@
                    VALUE SPACES.
 
 
-           *> ERRO CLIENTE
            05  ERR-CLI-NAO.
                10  FILLER         PIC X(34)
                    VALUE
@@ -114,7 +128,6 @@
                    VALUE SPACES.
 
 
-           *> ERRO TIPO
            05  ERR-TIPO.
                10  FILLER         PIC X(38)
                    VALUE
@@ -125,7 +138,6 @@
                    VALUE SPACES.
 
 
-           *> ERRO VALOR
            05  ERR-VALOR.
                10  FILLER         PIC X(39)
                    VALUE
@@ -136,7 +148,6 @@
                    VALUE SPACES.
 
 
-           *> ERRO SALDO
            05  ERR-SALDO.
                10  FILLER         PIC X(30)
                    VALUE

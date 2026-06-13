@@ -35,27 +35,27 @@
            MOVE ZEROS TO WKR-ERROS-SALDO.
            MOVE ZEROS TO WKR-ERROS-CLIENTE.
 
+           MOVE ZEROS TO WKR-SALDO-LIQUIDO.
+           MOVE ZEROS TO WKR-TAXA-ERRO.
+           MOVE ZEROS TO WKR-CALC-TAXA.
+           MOVE ZEROS TO WKR-CALC-PERCENTUAL.
+
            MOVE SPACES TO WKR-ULTIMO-ERRO.
+           MOVE SPACES TO WKR-SITUACAO.
 
 
            OPEN INPUT ARQ-CLI.
-
            OPEN INPUT ARQ-TRX.
-
            OPEN OUTPUT ARQ-ATU.
-
            OPEN OUTPUT ARQ-REL.
-
            OPEN OUTPUT ARQ-ERR.
 
 
            WRITE REG-REL FROM REL-CAB-1.
-
            WRITE REG-REL FROM REL-TRACO.
 
 
            PERFORM 0300-LER-CLI.
-
            PERFORM 0400-LER-TRX.
 
 
@@ -114,7 +114,6 @@
            READ ARQ-CLI
 
               AT END
-
                  MOVE 'S' TO WKR-FIM-CLI
 
            END-READ.
@@ -147,7 +146,6 @@
            READ ARQ-TRX
 
               AT END
-
                  MOVE 'S' TO WKR-FIM-TRX
 
            END-READ.
@@ -333,10 +331,8 @@
            MOVE TRX-CLI-ID
              TO ERR-ID-TIPO.
 
-
            WRITE REG-ERR
              FROM ERR-TIPO.
-
 
            ADD 1
              TO WKR-ERROS.
@@ -347,7 +343,6 @@
            ADD 1
              TO WKR-TRANS-REJEITADAS.
 
-
            MOVE 'TIPO INVALIDO'
              TO WKR-ULTIMO-ERRO.
 
@@ -357,10 +352,8 @@
            MOVE TRX-CLI-ID
              TO ERR-ID-VALOR.
 
-
            WRITE REG-ERR
              FROM ERR-VALOR.
-
 
            ADD 1
              TO WKR-ERROS.
@@ -371,7 +364,6 @@
            ADD 1
              TO WKR-TRANS-REJEITADAS.
 
-
            MOVE 'VALOR INVALIDO'
              TO WKR-ULTIMO-ERRO.
 
@@ -381,10 +373,8 @@
            MOVE TRX-CLI-ID
              TO ERR-ID-SALDO.
 
-
            WRITE REG-ERR
              FROM ERR-SALDO.
-
 
            ADD 1
              TO WKR-ERROS.
@@ -395,12 +385,59 @@
            ADD 1
              TO WKR-TRANS-REJEITADAS.
 
-
            MOVE 'SALDO INSUFICIENTE'
              TO WKR-ULTIMO-ERRO.
 
 
+       0860-CALCULAR-INDICADORES.
+
+           MOVE ZEROS
+             TO WKR-SALDO-LIQUIDO.
+
+           COMPUTE WKR-SALDO-LIQUIDO =
+               WKR-SALDO-CRED-GERAL
+               - WKR-SALDO-DEB-GERAL.
+
+
+           MOVE ZEROS
+             TO WKR-TAXA-ERRO.
+
+
+           IF WKR-TRANS-PROC > 0
+
+              COMPUTE WKR-TAXA-ERRO =
+                  (WKR-TRANS-REJEITADAS * 100)
+                  / WKR-TRANS-PROC
+
+           END-IF.
+
+
+           IF WKR-ERROS = 0
+
+              MOVE 'PROCESSAMENTO OK'
+                TO WKR-SITUACAO
+
+           ELSE
+
+              IF WKR-TAXA-ERRO < 10
+
+                 MOVE 'PROCESSAMENTO COM ALERTAS'
+                   TO WKR-SITUACAO
+
+              ELSE
+
+                 MOVE 'PROCESSAMENTO COM ERROS'
+                   TO WKR-SITUACAO
+
+              END-IF
+
+           END-IF.
+
+
        0900-FINALIZAR.
+
+           PERFORM 0860-CALCULAR-INDICADORES.
+
 
            WRITE REG-REL
              FROM REL-TRACO.
@@ -437,7 +474,6 @@
            DISPLAY 'ERROS ENCONTRADOS........: '
                    WKR-ERROS.
 
-
            DISPLAY 'ERROS DE TIPO............: '
                    WKR-ERROS-TIPO.
 
@@ -469,15 +505,27 @@
                    WKR-SALDO-DEB-GERAL.
 
 
+           DISPLAY 'SALDO LIQUIDO............: '
+                   WKR-SALDO-LIQUIDO.
+
+
+           DISPLAY 'TAXA DE ERRO.............: '
+                   WKR-TAXA-ERRO
+                   '%'.
+
+           DISPLAY 'SITUACAO.................: '
+                   WKR-SITUACAO.
+
+
+           DISPLAY '****************************************'.
+
            DISPLAY 'FIM DO PROCESSAMENTO'.
+
+           DISPLAY '****************************************'.
 
 
            CLOSE ARQ-CLI.
-
            CLOSE ARQ-TRX.
-
            CLOSE ARQ-ATU.
-
            CLOSE ARQ-REL.
-
            CLOSE ARQ-ERR.
